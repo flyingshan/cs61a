@@ -17,6 +17,14 @@ def choose(paragraphs, select, k):
     """
     # BEGIN PROBLEM 1
     "*** YOUR CODE HERE ***"
+    i = 0
+    for p in paragraphs:
+        if select(p):
+            if i == k:
+                return p
+            else:
+                i += 1
+    return ''
     # END PROBLEM 1
 
 
@@ -33,6 +41,16 @@ def about(topic):
     assert all([lower(x) == x for x in topic]), 'topics should be lowercase.'
     # BEGIN PROBLEM 2
     "*** YOUR CODE HERE ***"
+
+    def select(paragraph):
+        paragraphs = split(remove_punctuation(lower(paragraph)))
+        for w in topic:
+            for para in paragraphs:
+                if w == para:
+                    return True
+        return False
+
+    return select
     # END PROBLEM 2
 
 
@@ -57,6 +75,19 @@ def accuracy(typed, reference):
     reference_words = split(reference)
     # BEGIN PROBLEM 3
     "*** YOUR CODE HERE ***"
+    if len(typed_words) == 0 or len(reference_words) == 0:
+        return 0.0
+    all_typed_num = 0
+    correct_num = 0
+    for i in range(len(typed_words)):
+        if i >= len(reference_words):
+            all_typed_num += 1
+            continue
+        if typed_words[i] == reference_words[i]:
+            correct_num += 1
+        all_typed_num += 1
+    return correct_num / all_typed_num * 100
+
     # END PROBLEM 3
 
 
@@ -65,6 +96,10 @@ def wpm(typed, elapsed):
     assert elapsed > 0, 'Elapsed time must be positive'
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
+    elapsed_minute = elapsed / 60.0
+    characters_num = len(typed)
+    words_num = characters_num / 5.0
+    return words_num / elapsed_minute
     # END PROBLEM 4
 
 
@@ -73,9 +108,27 @@ def autocorrect(user_word, valid_words, diff_function, limit):
     from USER_WORD. Instead returns USER_WORD if that difference is greater
     than LIMIT.
     """
+
     # BEGIN PROBLEM 5
+
     "*** YOUR CODE HERE ***"
+    if user_word in valid_words:
+        return user_word
+    closest_word = min(valid_words, key=lambda w: diff_function(user_word, w, limit))
+    if diff_function(user_word, closest_word, limit) > limit:
+        return user_word
+    return closest_word
     # END PROBLEM 5
+
+
+def swap_diff_helper(start, goal, i, diff, limit):
+    if diff > limit:
+        return limit + 1
+    if i >= len(goal) or i >= len(start):
+        return diff + abs(len(start) - len(goal))
+    if start[i] != goal[i]:
+        diff += 1
+    return swap_diff_helper(start, goal, i + 1, diff, limit)
 
 
 def swap_diff(start, goal, limit):
@@ -84,37 +137,35 @@ def swap_diff(start, goal, limit):
     their lengths.
     """
     # BEGIN PROBLEM 6
-    assert False, 'Remove this line'
+    return swap_diff_helper(start, goal, 0, 0, limit)
     # END PROBLEM 6
+
 
 def edit_diff(start, goal, limit):
     """A diff function that computes the edit distance from START to GOAL."""
-    assert False, 'Remove this line'
 
-    if ______________: # Fill in the condition
+    if start == goal:  # Fill in the condition
         # BEGIN
-        "*** YOUR CODE HERE ***"
+        return 0
         # END
-
-    elif ___________: # Feel free to remove or add additional cases
+    if limit == 0:  # Feel free to remove or add additional cases
         # BEGIN
-        "*** YOUR CODE HERE ***"
+        return limit + 1
         # END
-
+    if not start:
+        return 1 + edit_diff(goal[0] + start, goal, limit - 1)
+    if not goal:
+        return 1 + edit_diff(start[1:], goal, limit - 1)
+    if start[0] == goal[0]:
+        return edit_diff(start[1:], goal[1:], limit)
     else:
-        add_diff = ...  # Fill in these lines
-        remove_diff = ... 
-        substitute_diff = ... 
-        # BEGIN
-        "*** YOUR CODE HERE ***"
-        # END
+        return min(1 + edit_diff(start[1:], goal, limit - 1), 1 + edit_diff(goal[0] + start, goal, limit - 1),
+                   1 + edit_diff(goal[0] + start[1:], goal, limit - 1))
 
 
 def final_diff(start, goal, limit):
     """A diff function. If you implement this function, it will be used."""
     assert False, 'Remove this line to use your final_diff function'
-
-
 
 
 ###########
