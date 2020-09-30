@@ -11,4 +11,9 @@ Suite 1
 		>>> x = 5
 		>>> x
 		5
+	Case mytest1
+		>>> c = 1
+		>>> c
+		1
+
 
